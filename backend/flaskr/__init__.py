@@ -1,4 +1,4 @@
-from ast import expr
+from ast import Not, expr
 import os
 from unicodedata import category
 from urllib import response
@@ -254,26 +254,53 @@ def create_app(test_config=None):
         try:
             body = request.get_json()
             found = False
+            checker = False
+            final = False
             previous_questions = body.get('previous_questions')
             quiz_category = body.get('quiz_category')
-            category = Category.query.filter_by(type=quiz_category).first()
+            print(previous_questions)
 
             if len(previous_questions) == 0:
-                quiz = Question.query.filter_by(category=category.id).first()
+                data = Question.query.filter(
+                    Question.category == quiz_category['id']).first()
+                print('here')
+                quiz = data.format()
             else:
-                questions = Question.query.all()
+                __questions = Question.query.all()
+                questions = [_question.format() for _question in __questions]
+
                 for question in questions:
                     if found:
-                        break
-                    else:
-                        for prev in previous_questions:
-                            if prev != question.id and question.category == category.type:
-                                quiz = question
-                                found = True
+                        for quest in previous_questions:
+                            if quest == question['id']:
+                                final = False
                                 break
+                            else:
+                                final = True
 
+                        if final:
+                            final = False
+                            found = False
+                            quiz = question
+                            break
+                        else:
+                            found = False
+                            continue
+                    else:
+                        for _previous in previous_questions:
+                            if _previous == question['id']:
+                                checker = False
+                            else:
+                                checker = True
+
+                        if checker:
+                            if str(question['category']) == str(quiz_category['id']):
+                                found = True
+                                quiz = question
                             else:
                                 continue
+                        else:
+                            continue
 
         except:
             error = True

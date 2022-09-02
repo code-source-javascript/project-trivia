@@ -51,10 +51,15 @@ def create_app(test_config=None):
     @app.route('/categories', methods=["GET"])
     def get_categories():
         error = False
-        categories = []
+        # categories = []
+        category = {}
         try:
             data = Category.query.order_by('id').all()
             categories = [info.format() for info in data]
+
+            for cat in categories:
+                key = str(cat.get("id"))
+                category[key] = cat.get('type')
         except:
             error = True
         finally:
@@ -63,8 +68,8 @@ def create_app(test_config=None):
             else:
                 return jsonify({
                     'success': True,
-                    'categories': categories,
-                    'total_catogories': len(categories)
+                    'categories': category,
+                    'totalCategories': len(categories)
                 })
 
     """
@@ -84,7 +89,7 @@ def create_app(test_config=None):
         error = False
         questions = []
         data = []
-        categories = []
+        category = {}
         try:
 
             data = Question.query.order_by('id').all()
@@ -92,6 +97,10 @@ def create_app(test_config=None):
             print(questions)
             category_data = Category.query.order_by('id').all()
             categories = [info.format() for info in category_data]
+
+            for cat in categories:
+                key = str(cat.get("id"))
+                category[key] = cat.get('type')
         except:
             error = True
         finally:
@@ -102,7 +111,7 @@ def create_app(test_config=None):
                     'success': True,
                     'questions': questions,
                     'totalQuestions': len(data),
-                    'categories': categories
+                    'categories': category
                 })
 
     """

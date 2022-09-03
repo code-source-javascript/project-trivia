@@ -1,15 +1,8 @@
-from ast import Not, expr
-import os
-from unicodedata import category
-from urllib import response
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-import random
 
-from models import setup_db, db, Question, Category
-
-QUESTIONS_PER_PAGE = 10
+from models import setup_db, Question, Category
 
 
 def create_app(test_config=None):
@@ -258,7 +251,6 @@ def create_app(test_config=None):
             final = False
             previous_questions = body.get('previous_questions')
             quiz_category = body.get('quiz_category')
-            print(previous_questions)
 
             if len(previous_questions) == 0:
                 data = Question.query.filter(

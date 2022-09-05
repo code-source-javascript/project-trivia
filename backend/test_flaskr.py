@@ -20,18 +20,18 @@ class TriviaTestCase(unittest.TestCase):
         setup_db(self.app, self.database_path)
 
         self.new_question = {
-            'question': 'What is the your name',
+            'question': 'What is the your name?',
             'answer': 'Caleb',
             'difficulty': 2,
             'category': 2
         }
-
         # binds the app to the current context
         with self.app.app_context():
             self.db = SQLAlchemy()
             self.db.init_app(self.app)
             # create all tables
             self.db.create_all()
+
 
     def tearDown(self):
         """Executed after reach test"""
@@ -42,7 +42,7 @@ class TriviaTestCase(unittest.TestCase):
     Write at least one test for each test for successful operation and for expected errors.
     """
 
-    def test_get_paginated_question(self):
+    def test_get_paginated_questions(self):
 
         res = self.client().get('/questions')
         data = json.loads(res.data)

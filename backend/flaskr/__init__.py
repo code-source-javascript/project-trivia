@@ -1,7 +1,6 @@
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-
 from models import setup_db, Question, Category
 
 
@@ -87,7 +86,6 @@ def create_app(test_config=None):
 
             data = Question.query.order_by('id').all()
             questions = setup_pagination(request, data)
-            print(questions)
             category_data = Category.query.order_by('id').all()
             categories = [info.format() for info in category_data]
 
@@ -253,10 +251,15 @@ def create_app(test_config=None):
             quiz_category = body.get('quiz_category')
 
             if len(previous_questions) == 0:
-                data = Question.query.filter(
-                    Question.category == quiz_category['id']).first()
-                print('here')
-                quiz = data.format()
+                if quiz_category['id'] == 0:
+                    data = Question.query.first()
+                    quiz = data.format()
+
+                else:
+                    data = Question.query.filter(
+                        Question.category == quiz_category['id']).first()
+                    quiz = data.format()
+
             else:
                 __questions = Question.query.all()
                 questions = [_question.format() for _question in __questions]
@@ -286,11 +289,15 @@ def create_app(test_config=None):
                                 checker = True
 
                         if checker:
-                            if str(question['category']) == str(quiz_category['id']):
+                            if quiz_category['id'] == 0:
                                 found = True
                                 quiz = question
                             else:
-                                continue
+                                if str(question['category']) == str(quiz_category['id']):
+                                    found = True
+                                    quiz = question
+                                else:
+                                    continue
                         else:
                             continue
 
@@ -311,7 +318,7 @@ def create_app(test_config=None):
     including 404 and 422.
     """
 
-    @app.errorhandler(404)
+    @ app.errorhandler(404)
     def not_found(error):
         return jsonify({
             'success': False,
@@ -319,7 +326,7 @@ def create_app(test_config=None):
             'message': 'Not Found'
         }), 404
 
-    @app.errorhandler(422)
+    @ app.errorhandler(422)
     def unprocessed(error):
         return jsonify({
             'success': False,
@@ -327,7 +334,7 @@ def create_app(test_config=None):
             'message': 'Unprocessable Entity'
         }), 422
 
-    @app.errorhandler(400)
+    @ app.errorhandler(400)
     def bad_request(error):
         return jsonify({
             'success': False,
@@ -335,7 +342,7 @@ def create_app(test_config=None):
             'message': 'Bad Request'
         }), 400
 
-    @app.errorhandler(405)
+    @ app.errorhandler(405)
     def bad_request(error):
         return jsonify({
             'success': False,

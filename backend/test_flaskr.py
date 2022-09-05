@@ -53,7 +53,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['questions'])
         self.assertTrue(data['categories'])
 
-    def test_categories(self):
+    def test_get_categories(self):
 
         res = self.client().get('/categories')
         data = json.loads(res.data)
@@ -63,10 +63,10 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['totalCategories'])
         self.assertTrue(data['categories'])
 
-    def test_question_search(self):
+    def test_question_by_search(self):
 
         res = self.client().post('/questions/search',
-                                 json={'searchTerm': 'What'})
+                                 json={'searchTerm': "Wh"})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -77,7 +77,7 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_question_based_on_category(self):
 
-        res = self.client().get('/categories/2/questions')
+        res = self.client().get('/categories/6/questions')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -89,7 +89,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_get_quiz(self):
 
         res = self.client().post(
-            '/quizzes', json={'previous_questions': [], 'quiz_category': 1})
+            '/quizzes', json={'previous_questions': [], 'quiz_category': 0})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -97,7 +97,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['question'])
 
     def test_delete_question(self):
-        res = self.client().delete('/questions/1')
+        res = self.client().delete('/questions/2')
         data = json.loads(res.data)
 
         book = Question.query.filter(Question.id == 1).one_or_none()
@@ -107,11 +107,37 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(book, None)
 
     def text_create_new_question(self):
-        res = self.client().post('/books', json=self.new_book)
+        res = self.client().post('/questions', json=self.new_book)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
+
+        # errors
+
+    def test_if_question_does_exist(self):
+        res = self.client().delete('/questions/1000')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Bad Request')
+
+    # def test_400_for_failed_update(self):
+    #     res = self.client().patch('/questions/5')
+    #     data = json.loads(res.data)
+
+    #     self.assertEqual(res.status_code, 400)
+    #     self.assertEqual(data['success'], False)
+    #     self.assertEqual(data['message'], 'Bad Request')
+
+    def test_400_sent_requesting_beyond_valid_page(self):
+        res = self.client().get('/questions?page=10000')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Not Found')
 
 
 # Make the tests conveniently executable

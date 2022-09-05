@@ -18,11 +18,16 @@ def create_app(test_config=None):
     # function for pagination
     def setup_pagination(request, data):
         page = request.args.get('page', 1, type=int)
-        item_per_page = 10
-        start = (page - 1)*item_per_page
-        end = start + item_per_page
-        formatted_data = [info.format() for info in data]
-        return formatted_data[start:end]
+        highest = len(data)
+        print(highest)
+        if page > highest:
+            abort(404)
+        else:
+            item_per_page = 10
+            start = (page - 1)*item_per_page
+            end = start + item_per_page
+            formatted_data = [info.format() for info in data]
+            return formatted_data[start:end]
 
     """
     @TODO: Use the after_request decorator to set Access-Control-Allow
@@ -43,7 +48,7 @@ def create_app(test_config=None):
     @app.route('/categories', methods=["GET"])
     def get_categories():
         error = False
-        # categories = []
+        categories = []
         category = {}
         try:
             data = Category.query.order_by('id').all()
@@ -61,7 +66,7 @@ def create_app(test_config=None):
                 return jsonify({
                     'success': True,
                     'categories': category,
-                    'totalCategories': len(categories)
+                    'totalCategories': len(data)
                 })
 
     """
@@ -83,7 +88,6 @@ def create_app(test_config=None):
         data = []
         category = {}
         try:
-
             data = Question.query.order_by('id').all()
             questions = setup_pagination(request, data)
             category_data = Category.query.order_by('id').all()
@@ -98,6 +102,7 @@ def create_app(test_config=None):
             if error:
                 abort(400)
             else:
+                print(category)
                 return jsonify({
                     'success': True,
                     'questions': questions,
@@ -117,7 +122,11 @@ def create_app(test_config=None):
         error = False
         try:
             question = Question.query.get(question_id)
-            question.delete()
+            if question:
+                question.delete()
+            else:
+                abort(400)
+
         except:
             error = True
         finally:
@@ -176,7 +185,6 @@ def create_app(test_config=None):
     @app.route('/questions/search', methods=['POST'])
     def search_question():
         error = False
-        questions = []
         try:
             searchTerm = request.json.get('searchTerm')
             question_data = Question.query.filter(

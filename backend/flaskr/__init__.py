@@ -1,7 +1,6 @@
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-
 from models import setup_db, Question, Category
 
 
@@ -19,11 +18,16 @@ def create_app(test_config=None):
     # function for pagination
     def setup_pagination(request, data):
         page = request.args.get('page', 1, type=int)
-        item_per_page = 10
-        start = (page - 1)*item_per_page
-        end = start + item_per_page
-        formatted_data = [info.format() for info in data]
-        return formatted_data[start:end]
+        highest = len(data)
+        print(highest)
+        if page > highest:
+            abort(404)
+        else:
+            item_per_page = 10
+            start = (page - 1)*item_per_page
+            end = start + item_per_page
+            formatted_data = [info.format() for info in data]
+            return formatted_data[start:end]
 
     """
     @TODO: Use the after_request decorator to set Access-Control-Allow
@@ -44,7 +48,7 @@ def create_app(test_config=None):
     @app.route('/categories', methods=["GET"])
     def get_categories():
         error = False
-        # categories = []
+        categories = []
         category = {}
         try:
             data = Category.query.order_by('id').all()
@@ -62,7 +66,7 @@ def create_app(test_config=None):
                 return jsonify({
                     'success': True,
                     'categories': category,
-                    'totalCategories': len(categories)
+                    'totalCategories': len(data)
                 })
 
     """
@@ -84,10 +88,8 @@ def create_app(test_config=None):
         data = []
         category = {}
         try:
-
             data = Question.query.order_by('id').all()
             questions = setup_pagination(request, data)
-            print(questions)
             category_data = Category.query.order_by('id').all()
             categories = [info.format() for info in category_data]
 
@@ -100,6 +102,7 @@ def create_app(test_config=None):
             if error:
                 abort(400)
             else:
+                print(category)
                 return jsonify({
                     'success': True,
                     'questions': questions,
@@ -119,7 +122,11 @@ def create_app(test_config=None):
         error = False
         try:
             question = Question.query.get(question_id)
-            question.delete()
+            if question:
+                question.delete()
+            else:
+                abort(400)
+
         except:
             error = True
         finally:
@@ -178,7 +185,6 @@ def create_app(test_config=None):
     @app.route('/questions/search', methods=['POST'])
     def search_question():
         error = False
-        questions = []
         try:
             searchTerm = request.json.get('searchTerm')
             question_data = Question.query.filter(
@@ -253,10 +259,15 @@ def create_app(test_config=None):
             quiz_category = body.get('quiz_category')
 
             if len(previous_questions) == 0:
-                data = Question.query.filter(
-                    Question.category == quiz_category['id']).first()
-                print('here')
-                quiz = data.format()
+                if quiz_category['id'] == 0:
+                    data = Question.query.first()
+                    quiz = data.format()
+
+                else:
+                    data = Question.query.filter(
+                        Question.category == quiz_category['id']).first()
+                    quiz = data.format()
+
             else:
                 __questions = Question.query.all()
                 questions = [_question.format() for _question in __questions]
@@ -286,11 +297,15 @@ def create_app(test_config=None):
                                 checker = True
 
                         if checker:
-                            if str(question['category']) == str(quiz_category['id']):
+                            if quiz_category['id'] == 0:
                                 found = True
                                 quiz = question
                             else:
-                                continue
+                                if str(question['category']) == str(quiz_category['id']):
+                                    found = True
+                                    quiz = question
+                                else:
+                                    continue
                         else:
                             continue
 
@@ -311,7 +326,7 @@ def create_app(test_config=None):
     including 404 and 422.
     """
 
-    @app.errorhandler(404)
+    @ app.errorhandler(404)
     def not_found(error):
         return jsonify({
             'success': False,
@@ -319,7 +334,7 @@ def create_app(test_config=None):
             'message': 'Not Found'
         }), 404
 
-    @app.errorhandler(422)
+    @ app.errorhandler(422)
     def unprocessed(error):
         return jsonify({
             'success': False,
@@ -327,7 +342,7 @@ def create_app(test_config=None):
             'message': 'Unprocessable Entity'
         }), 422
 
-    @app.errorhandler(400)
+    @ app.errorhandler(400)
     def bad_request(error):
         return jsonify({
             'success': False,
@@ -335,7 +350,7 @@ def create_app(test_config=None):
             'message': 'Bad Request'
         }), 400
 
-    @app.errorhandler(405)
+    @ app.errorhandler(405)
     def bad_request(error):
         return jsonify({
             'success': False,

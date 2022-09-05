@@ -19,9 +19,8 @@ def create_app(test_config=None):
     def setup_pagination(request, data):
         page = request.args.get('page', 1, type=int)
         highest = len(data)
-        print(highest)
         if page > highest:
-            abort(404)
+            abort(400)
         else:
             item_per_page = 10
             start = (page - 1)*item_per_page
@@ -48,12 +47,12 @@ def create_app(test_config=None):
     @app.route('/categories', methods=["GET"])
     def get_categories():
         error = False
-        categories = []
+        length = 0
         category = {}
         try:
             data = Category.query.order_by('id').all()
             categories = [info.format() for info in data]
-
+            length = len(categories)
             for cat in categories:
                 key = str(cat.get("id"))
                 category[key] = cat.get('type')
@@ -66,7 +65,7 @@ def create_app(test_config=None):
                 return jsonify({
                     'success': True,
                     'categories': category,
-                    'totalCategories': len(data)
+                    'totalCategories': length
                 })
 
     """
@@ -102,7 +101,6 @@ def create_app(test_config=None):
             if error:
                 abort(400)
             else:
-                print(category)
                 return jsonify({
                     'success': True,
                     'questions': questions,
@@ -188,7 +186,7 @@ def create_app(test_config=None):
         try:
             searchTerm = request.json.get('searchTerm')
             question_data = Question.query.filter(
-                Question.question.like('%' + searchTerm+'%')).all()
+                Question.question.ilike('%' + searchTerm+'%')).all()
             questions = [data.format() for data in question_data]
         except:
             error = True
@@ -201,7 +199,7 @@ def create_app(test_config=None):
                     'success': True,
                     'questions': questions,
                     'totalQuestions': len(questions),
-                    'currentCategory': ''
+                    'currentCategory': 'ALL'
                 })
 
     """

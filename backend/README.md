@@ -117,7 +117,7 @@ Errors are returned as JSON objects in the following format:
 - Fetches a dictionary of categories,paginated questions based on the query parameter value, success and totalQuestions 
 - Request Arguments: None
 - Query Parameter: `/questions?page=1`
-- Returns: An object with  `categories`, that contains an object of `id: category_string` key: value pairs , `questions`, which is an array object containing of keys `answer, category, difficulty, id and question` , `success` with value `True` which signifies successful process and `totalQuestions` which defines the number of question items in the database .
+- Returns: An object with  `categories`, that contains an object of `id: category_string` key: value pairs , `questions`, which is an array of object containing  keys `answer, category, difficulty, id and question` , `success` with value `True` which signifies successful process and `totalQuestions` which defines the number of question items in the database .
 
 ```json
 {
@@ -150,7 +150,7 @@ Errors are returned as JSON objects in the following format:
 `curl http://localhost:5000/questions/6 -X DELETE`
 
 - Deletes a particular question
-- Request Arguments: `question_id`
+- Request Arguments: `question id`
 - Returns: An object with  `success` with value `True` which signifies successful deletion and `question` with value of deleted question id
 
 ```json
@@ -167,7 +167,7 @@ Errors are returned as JSON objects in the following format:
 - Create a question with it answer,difficulty, and category
 - Request Arguments: None
 - Request Body: `{"question":String,"answer":String,"difficulty":Integer,"category":Integer } `
-- Returns: An object with  `success` with value `True` which signifies successful creation and `question` which is an object that contains it fields and values
+- Returns: An object with  `success` with value `True` which signifies successful creation and `question` which is an object that contains it fields and values of the question created
 
 ```json
 {
@@ -188,7 +188,7 @@ Errors are returned as JSON objects in the following format:
 - Retrieve questions based on a searchTerm
 - Request Arguments: None
 - Request Body: `{"searchTerm":"What"}`
-- Returns: An object with  `success` with value `True` which signifies successful search,  `questions` which is an object that contains it fields and values and `totalQuestions`is the total question found and `currentCategory` gives a value for the current category.
+- Returns: An object with  `success` with value `True` which signifies successful search,  `questions` which is an array of objects  containing it fields and values, `totalQuestions` defining the total question found and `currentCategory` giving the name of the current category.
 
 ```json
 {
@@ -218,7 +218,7 @@ Errors are returned as JSON objects in the following format:
 
 - Retrieve questions based on some category
 - Request Arguments: `category_id`
-- Returns: An object with  `success` with value `True` which signifies successful fetch,  `questions` which is an object that contains it fields and values and `totalQuestions`is the total question found and `currentCategory` gives a value for the current category.
+- Returns: An object with  `success` with value `True` which signifies successful fetch,  `questions` which is an array of objects that contains it fields and values `totalQuestions`defining the total question found and `currentCategory` gives a value for the current category.
 
 ```json
 {
@@ -248,10 +248,10 @@ Errors are returned as JSON objects in the following format:
 
 `curl http://localhost:5000/quizzes -X POST -H 'Content-Type:application/json' -d 'json={"previous_questions":[1,2],"quiz_category":0 }' `
 
-- Retrieve questions based on a searchTerm
+- Retrieve unrepeatred quiz questions in relation to a category
 - Request Arguments: None
 - Request Body: `{"previous_questions":Array, "quiz_category":Integer}`
-- Returns: An object with  `success` with value `True` which signifies successful quiz selection,  `question` which is an object that contains it fields and values
+- Returns: An object with  `success` with value `True` which signifies successful quiz selection,  `question` which is an array of objects that contains it fields and values
 
 ```json
 {

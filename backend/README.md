@@ -162,6 +162,114 @@ Errors are returned as JSON objects in the following format:
 
 
 
+`curl http://localhost:5000/questions -X POST -H 'Content-Type:application/json' -d '{"question":"How many continents are in the world","answer":"Seven","difficulty":1,"category":3 }' `
+
+- Create a question with it answer,difficulty, and category
+- Request Arguments: None
+- Request Body: `{"question":String,"answer":String,"difficulty":Integer,"category":Integer } `
+- Returns: An object with  `success` with value `True` which signifies successful creation and `question` which is an object that contains it fields and values
+
+```json
+{
+  "question":{
+    "answer":"Seven",
+    "category":3,
+    "difficulty":1,
+    "id":31,
+    "question":"How many continents are in the world"
+    },
+    "success":true
+  }
+```
+
+
+`curl http://localhost:5000/questions/search -X POST -H 'Content-Type:application/json' -d '{"searchTerm":"What" }' `
+
+- Retrieve questions based on a searchTerm
+- Request Arguments: None
+- Request Body: `{"searchTerm":"What"}`
+- Returns: An object with  `success` with value `True` which signifies successful search,  `questions` which is an object that contains it fields and values and `totalQuestions`is the total question found and `currentCategory` gives a value for the current category.
+
+```json
+{
+  "currentCategory":"ALL",
+  "questions":[
+    {
+      "answer":"Muhammad Ali",
+      "category":4,
+      "difficulty":1,
+      "id":9,
+      "question":"What boxer's original name is Cassius Clay?"
+    },
+    {
+      "answer":"Apollo 13",
+      "category":5,
+      "difficulty":4,
+      "id":2,
+      "question":"What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    }
+    ],
+    "success":true,
+    "totalQuestions":2
+  }
+```
+
+`curl http://localhost:5000/categories/6/questions -X GET `
+
+- Retrieve questions based on some category
+- Request Arguments: `category_id`
+- Returns: An object with  `success` with value `True` which signifies successful fetch,  `questions` which is an object that contains it fields and values and `totalQuestions`is the total question found and `currentCategory` gives a value for the current category.
+
+```json
+{
+  "currentCategory":"Geography",
+  "questions":[
+    {
+      "answer":"Muhammad Ali",
+      "category":3,
+      "difficulty":1,
+      "id":9,
+      "question":"What boxer's original name is Cassius Clay?"
+    },
+    {
+      "answer":"Apollo 13",
+      "category":3,
+      "difficulty":4,
+      "id":2,
+      "question":"What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    }
+    ],
+    "success":true,
+    "totalQuestions":2
+  }
+```
+
+
+
+`curl http://localhost:5000/quizzes -X POST -H 'Content-Type:application/json' -d 'json={"previous_questions":[1,2],"quiz_category":0 }' `
+
+- Retrieve questions based on a searchTerm
+- Request Arguments: None
+- Request Body: `{"previous_questions":Array, "quiz_category":Integer}`
+- Returns: An object with  `success` with value `True` which signifies successful quiz selection,  `question` which is an object that contains it fields and values
+
+```json
+{
+  "question":{
+      "answer":"Muhammad Ali",
+      "category":4,
+      "difficulty":1,
+      "id":9,
+      "question":"What boxer's original name is Cassius Clay?"
+    },
+    "success":true,
+   
+  }
+```
+
+
+
+
 
 ## Testing
 

@@ -161,6 +161,7 @@ def create_app(test_config=None):
             question = Question(question=question, answer=answer,
                                 difficulty=difficulty, category=category)
             question.insert()
+            print(question)
 
         except:
             error = True
@@ -169,7 +170,8 @@ def create_app(test_config=None):
                 abort(400)
             else:
                 return jsonify({
-                    'success': True
+                    'success': True,
+                    'question': question.format()
                 })
 
     """
@@ -349,6 +351,14 @@ def create_app(test_config=None):
             'error': 400,
             'message': 'Bad Request'
         }), 400
+
+    @ app.errorhandler(500)
+    def internal_server_error(error):
+        return jsonify({
+            'success': False,
+            'error': 500,
+            'message': 'Internal Server Error'
+        }), 500
 
     @ app.errorhandler(405)
     def bad_request(error):

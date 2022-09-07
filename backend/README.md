@@ -69,26 +69,99 @@ One note before you delve into your tasks: for each endpoint, you are expected t
 
 ## Documenting your Endpoints
 
-You will need to provide detailed documentation of your API endpoints including the URL, request parameters, and the response body. Use the example below as a reference.
+Getting Started 
+  .Base URL: At present this api can only be run locally and is not hosted as a base URL. The backend app is hosted at the default http://127.0.0.1:5000/ which is set as a proxy in the frontend configuration.
 
-### Documentation Example
 
-`GET '/api/v1.0/categories'`
+### Error Handling
 
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
+Errors are returned as JSON objects in the following format:
+
+```json
+  {
+    "success":False,
+    "error":400,
+    "message":"Bad Request"
+  }
+
+  The API will return three error types when requests fail
+    - 400 Bad Request 
+    - 404 Resource Not Found
+    - 422 Unprocessable Entity
+    - 405 Method Not Allowed 
+
+ ```   
+
+
+### Endpoints
+
+`curl http://localhost:5000/categories -X GET`
+
+- Fetches a dictionary of categories, totalCategories, and success
 - Request Arguments: None
-- Returns: An object with a single key, `categories`, that contains an object of `id: category_string` key: value pairs.
+- Returns: An object with  `categories`, that contains an object of `id: category_string` key: value pairs , `success` with value `True` which signifies success and `totalCategories` which defines the number of category items in the database .
+
+```json
+{ "categories":{
+  "1":"Science",
+  "2":"Art",
+  "3":"Geography",
+  },
+  "success":true,
+  "totalCategories":6
+}
+```
+
+`curl http://localhost:5000/questions -X GET`
+
+- Fetches a dictionary of categories,paginated questions based on the query parameter value, success and totalQuestions 
+- Request Arguments: None
+- Query Parameter: `/questions?page=1`
+- Returns: An object with  `categories`, that contains an object of `id: category_string` key: value pairs , `questions`, which is an array object containing of keys `answer, category, difficulty, id and question` , `success` with value `True` which signifies successful process and `totalQuestions` which defines the number of question items in the database .
 
 ```json
 {
-  "1": "Science",
-  "2": "Art",
-  "3": "Geography",
-  "4": "History",
-  "5": "Entertainment",
-  "6": "Sports"
+  "categories":{
+  "1":"Science",
+  "2":"Art"
+  },
+  "questions":[
+    {
+      "answer":"Apollo 13",
+      "category":5,
+      "difficulty":4,
+      "id":2,
+      "question":"What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    },
+    {
+      "answer":"Tom Cruise",
+      "category":5,
+      "difficulty":4,
+      "id":4,
+      "question":"What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    }
+  ],
+  "success":true,
+  "totalQuestions":18
+  
 }
 ```
+
+`curl http://localhost:5000/questions/6 -X DELETE`
+
+- Deletes a particular question
+- Request Arguments: `question_id`
+- Returns: An object with  `success` with value `True` which signifies successful deletion and `question` with value of deleted question id
+
+```json
+{ 
+  "success":true,
+  "question":6
+}
+```
+
+
+
 
 ## Testing
 

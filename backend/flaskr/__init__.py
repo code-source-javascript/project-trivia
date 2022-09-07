@@ -118,6 +118,7 @@ def create_app(test_config=None):
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
         error = False
+        question = {}
         try:
             question = Question.query.get(question_id)
             if question:
@@ -133,6 +134,7 @@ def create_app(test_config=None):
             else:
                 return jsonify({
                     'success': True,
+                    'question': question_id
                 })
 
     """

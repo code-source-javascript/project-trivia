@@ -84,12 +84,13 @@ Errors are returned as JSON objects in the following format:
     "message":"Bad Request"
   }
 
-  The API will return three error types when requests fail
+ " The API will return three error types when requests fail
     - 400 Bad Request 
     - 404 Resource Not Found
     - 422 Unprocessable Entity
     - 405 Method Not Allowed 
-
+    - 500 Internal Server Error
+"
  ```   
 
 
